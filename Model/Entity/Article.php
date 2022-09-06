@@ -4,6 +4,7 @@ namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
 use Cake\Collection\Collection;
+use Cake\Log\Log;
 
 class Article extends Entity
 {
@@ -13,9 +14,11 @@ class Article extends Entity
         'slug' => false,
     ];
 
-    // tag_stringをDBから読み出すた際の加工処理
+    // tag_stringをDBから読み出す際の加工処理
     protected function _getTagString()
     {
+        Log::debug("_getTagString");
+
         // entity（レコード）にtag_stringが設定されているか確認->trueならtag_stringを取得？
         if (isset($this->_properties['tag_string'])) {
             return $this->_properties['tag_string'];

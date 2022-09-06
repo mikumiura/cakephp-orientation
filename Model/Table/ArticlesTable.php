@@ -6,6 +6,7 @@ use Cake\ORM\Table;
 use Cake\ORM\Query;
 use Cake\Utility\Text;
 use Cake\Validation\Validator;
+use Cake\Log\Log;
 
 class ArticlesTable extends Table
 {
@@ -21,18 +22,19 @@ class ArticlesTable extends Table
     // 保存前に通る処理
     public function beforeSave($event, $entity, $options)
     {
-        // Entityを参照して、生成したタグ文字列をタグデータとしてレコードに保存
         if ($entity->tag_string) {
             $entity->tags = $this->_buildTags($entity->tag_string);
         }
 
-        // レコードが既に存在する、かつslugカラムの値が入ってないとき
-        if ($entity->isNew() && !$entity->slug) {
-            $sluggedTitle = Text::slug($entity->title);
-            // スラグをスキーマで定義されている最大長に調整
-            // 生成したスラグ文字列の先頭から最大191バイトまでを取得し、slugとする
-            $entity->slug = substr($sluggedTitle, 0, 191);
-        }
+        Log::debug($entity->isNew());
+
+        // // レコードが既に存在する、かつslugカラムの値が入ってないとき
+        // if ($entity->isNew() && !$entity->slug) {
+        //     $sluggedTitle = Text::slug($entity->title);
+        //     // スラグをスキーマで定義されている最大長に調整
+        //     // 生成したスラグ文字列の先頭から最大191バイトまでを取得し、slugとする
+        //     $entity->slug = substr($sluggedTitle, 0, 191);
+        // }
     }
 
     public function validationDefault(Validator $validator)

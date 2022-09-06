@@ -22,9 +22,7 @@ class ArticlesController extends AppController
     public function index()
     {
         $articles = $this->Paginator->paginate($this->Articles->find());
-        // ログ確認
-        $this->log($articles, 'debug');
-        // index.ctpに$articlesを渡す
+        // $this->log($articles, 'debug');
         $this->set(compact('articles'));
     }
 
@@ -32,7 +30,6 @@ class ArticlesController extends AppController
     public function view($slug = null)
     {
         $article = $this->Articles->findBySlug($slug)->firstOrFail();
-        // view.ctpに$articleを渡す
         $this->set(compact('article'));
     }
 
@@ -43,14 +40,20 @@ class ArticlesController extends AppController
         $article = $this->Articles->newEntity();
         if ($this->request->is('post')) {
             // postデータをgetData()で取得し、作成済みのレコードにセットする
+            $this->log('before patchEntity', 'debug');
             $article = $this->Articles->patchEntity($article, $this->request->getData());
-            $this->log($this->request->getData(), 'debug');
+            $this->log('after patchEntity', 'debug');
+
+            // $this->log($this->request->getData(), 'debug');
             
             // user_idの決め打ちは一時的なもので、あとで認証を構築する際に削除される
             $article->user_id = 1;
 
+            $this->log('before save', 'debug');
+            // $this->log($article, 'debug');
             if ($this->Articles->save($article)) {
                 $this->Flash->success(__('Your article has been saved.'));
+                $this->log('after save', 'debug');
                 // 同じcontroller内のindexに遷移する（リダイレクト）
                 return $this->redirect(['action' => 'index']);
             }
