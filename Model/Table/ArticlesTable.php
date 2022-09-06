@@ -26,15 +26,15 @@ class ArticlesTable extends Table
             $entity->tags = $this->_buildTags($entity->tag_string);
         }
 
-        Log::debug($entity->isNew());
+        Log::debug($entity);
 
-        // // レコードが既に存在する、かつslugカラムの値が入ってないとき
-        // if ($entity->isNew() && !$entity->slug) {
-        //     $sluggedTitle = Text::slug($entity->title);
-        //     // スラグをスキーマで定義されている最大長に調整
-        //     // 生成したスラグ文字列の先頭から最大191バイトまでを取得し、slugとする
-        //     $entity->slug = substr($sluggedTitle, 0, 191);
-        // }
+        // レコードが既に存在する、かつslugカラムの値が入ってないとき
+        if ($entity->isNew() && !$entity->slug) {
+            $sluggedTitle = Text::slug($entity->title);
+            // スラグをスキーマで定義されている最大長に調整
+            // 生成したスラグ文字列の先頭から最大191バイトまでを取得し、slugとする
+            $entity->slug = substr($sluggedTitle, 0, 191);
+        }
     }
 
     public function validationDefault(Validator $validator)
@@ -52,8 +52,6 @@ class ArticlesTable extends Table
         return $validator;
     }
 
-    // カスタムファインダーメソッドfindTagged()を実装する
-    // $queryはクエリービルダーのインスタンス
     // $optionsにはArticlesControllerのtags()でfind('tagged')に渡した"tags"オプションが含まれている
     public function findTagged(Query $query, array $options)
     {
@@ -84,6 +82,7 @@ class ArticlesTable extends Table
 
     protected function _buildTags($tagString)
     {
+        // 複数タグを付与したときに生きる処理
         // タグのトリミング
         $newTags = array_map('trim', explode(',', $tagString));
         // すべての空のタグを削除
@@ -91,14 +90,15 @@ class ArticlesTable extends Table
         // 重複するタグを削除
         $newTags = array_unique($newTags);
 
-        // 空リストを準備
         $out = [];
         $query = $this->Tags->find()
             ->where(['Tags.title IN' => $newTags]);
         
-        // newTagsリストの中に既存のタグが存在する場合、既存タグを削除
         foreach ($query->extract('title') as $existing) {
+            // 既にDBに登録されているタグが$newTags内にあったとき、その要素の$newTagsにおけるindex番号がとれてくる
             $index = array_search($existing, $newTags);
+            // Log::debug($index);
+            // タグの配列から既存タグをunset()で削除　※削除しとかないとDBに重複データ入っちゃう
             if ($index !== false) {
                 unset($newTags[$index]);
             }
@@ -113,6 +113,8 @@ class ArticlesTable extends Table
         foreach ($newTags as $tag) {
             $out[] = $this->Tags->newEntity(['title' => $tag]);
         }
+
+        Log::debug("_buildTags");
 
         return $out;
     }

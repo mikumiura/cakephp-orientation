@@ -44,7 +44,7 @@ class ArticlesController extends AppController
             $article = $this->Articles->patchEntity($article, $this->request->getData());
             $this->log('after patchEntity', 'debug');
 
-            // $this->log($this->request->getData(), 'debug');
+            $this->log($this->request->getData(), 'debug');
             
             // user_idの決め打ちは一時的なもので、あとで認証を構築する際に削除される
             $article->user_id = 1;
