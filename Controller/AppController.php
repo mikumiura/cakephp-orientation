@@ -73,8 +73,7 @@ class AppController extends Controller
             'unauthorizedRedirect' => $this->referer()
         ]);
 
-        // displayアクションを許可して、PagesControllerが引き続き
-        // 動作するようにする。また、読み取り専用のアクションを有効にする。
+        // 認可不要なアクションの定義
         $this->Auth->allow(['display', 'view', 'index']);
     }
 }
