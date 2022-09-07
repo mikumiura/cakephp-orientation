@@ -22,14 +22,12 @@ class ArticlesTable extends Table
     public function beforeSave($event, $entity, $options)
     {
         // 入力されたタグ文字列をデータとして保存するために通る処理
-        // if ($entity->tag_string) {
-        //     $entity->tags = $this->_buildTags($entity->tag_string);
-        // }
-        
-        $entity->tags = $this->_buildTags($entity->tag_string);
-        Log::debug($entity);
+        if ($entity->tag_string) {
+            $entity->tags = $this->_buildTags($entity->tag_string);
+        }
+        // Log::debug($entity);
 
-        // レコードが既に存在する、かつslugカラムの値が入ってないとき
+        // レコードが既に存在する（1/true）、かつslugカラムの値が入ってないとき
         if ($entity->isNew() && !$entity->slug) {
             $sluggedTitle = Text::slug($entity->title);
             // スラグをスキーマで定義されている最大長に調整
@@ -68,7 +66,7 @@ class ArticlesTable extends Table
 
         if (empty($options['tags'])) {
             // タグが指定されていない場合は、タグのない記事を検索する
-            // nullを条件に指定してるからleftjoinなんだね〜
+            // nullも表示したいからleftjoin
             $query -> leftJoinWith('Tags')
                 -> where(['Tags.title IS' => null]);
         } else {
@@ -84,9 +82,6 @@ class ArticlesTable extends Table
     // ここでtagsを作ってる
     protected function _buildTags($tagString)
     {
-
-        // return ["tag1", "tag2"];
-
         // 複数タグを付与したときに生きる処理
         // tagString（カンマ区切り文字列）をカンマで区切って配列に
         $newTags = array_map('trim', explode(',', $tagString));

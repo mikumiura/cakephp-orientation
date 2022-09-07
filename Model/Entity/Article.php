@@ -19,25 +19,34 @@ class Article extends Entity
     {
         Log::debug("_getTagString");
 
-        // // save前レコードにtag_stringがある場合はこのifでreturnしてる！
+        // // 基本的に記事追加した時はここを通る想定
+        // // save前レコードにtag_stringがある場合はこのifでreturnしてる
         // if (isset($this->_properties['tag_string'])) {
         //     // Log::debug("ここです！");
         //     return $this->_properties['tag_string'];
         // }
-        // // tagsが生成されなかった時の処理
-        // if (empty($this->tags)) {
-        //     Log::debug("からですか");
-        //     return '';
-        // }
 
-        // tag_stringがunsetでtagsがsetされてる時
-        $tags = new Collection($this->tags);
-        $str = $tags->reduce(function ($string, $tag) {
-            Log::debug('通って欲しい処理');
-            return $string . $tag->title . ', ';
-        }, '');
+        // 記事の追加ページ読み込むとき
+        // tagsが生成されなかった時の処理
+        Log::debug($this->tags);
+        if (empty($this->tags)) {
+            Log::debug("からですか");
+            return '';
+        }
 
-        // 最後尾の要素にも', 'をつけているのでtrim()で除去する
-        return trim($str, ', ');
+        // tag_stringは""で、tagsは生成されてる時
+        Log::debug("hoge");
+        Log::debug($this->tags);
+        if ($this->tags) {
+            $tags = new Collection($this->tags);
+            $str = $tags->reduce(function ($string, $tag) {
+                Log::debug('通って欲しい処理');
+                return $string . $tag->title . ', ';
+            }, '');
+
+            // 最後尾の要素にも', 'をつけているのでtrim()で除去する
+            return trim($str, ', ');
+        }
+        
     }
 }

@@ -40,7 +40,7 @@ class ArticlesController extends AppController
         $article = $this->Articles->newEntity();
 
         if ($this->request->is('post')) {
-            
+
             $this->log('before patchEntity', 'debug');
             // add画面で入力したデータ（postデータ）をgetData()で取得し、作成した新規レコードを上書きする　※まだ保存はしない
             $article = $this->Articles->patchEntity($article, $this->request->getData());
