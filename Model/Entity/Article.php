@@ -19,17 +19,21 @@ class Article extends Entity
     {
         Log::debug("_getTagString");
 
-        // entity（レコード）にtag_stringが設定されているか確認->trueならtag_stringを取得？
-        if (isset($this->_properties['tag_string'])) {
-            return $this->_properties['tag_string'];
-        }
-        if (empty($this->tags)) {
-            return '';
-        }
+        // // save前レコードにtag_stringがある場合はこのifでreturnしてる！
+        // if (isset($this->_properties['tag_string'])) {
+        //     // Log::debug("ここです！");
+        //     return $this->_properties['tag_string'];
+        // }
+        // // tagsが生成されなかった時の処理
+        // if (empty($this->tags)) {
+        //     Log::debug("からですか");
+        //     return '';
+        // }
 
-        // タグの配列を引数で渡してCollectionクラスのインスタンスを生成することで、タグ配列の操作を可能にしてる
+        // tag_stringがunsetでtagsがsetされてる時
         $tags = new Collection($this->tags);
         $str = $tags->reduce(function ($string, $tag) {
+            Log::debug('通って欲しい処理');
             return $string . $tag->title . ', ';
         }, '');
 

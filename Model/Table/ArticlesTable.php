@@ -19,13 +19,14 @@ class ArticlesTable extends Table
         $this->belongsToMany('Tags');
     }
 
-    // 保存前に通る処理
     public function beforeSave($event, $entity, $options)
     {
-        if ($entity->tag_string) {
-            $entity->tags = $this->_buildTags($entity->tag_string);
-        }
-
+        // 入力されたタグ文字列をデータとして保存するために通る処理
+        // if ($entity->tag_string) {
+        //     $entity->tags = $this->_buildTags($entity->tag_string);
+        // }
+        
+        $entity->tags = $this->_buildTags($entity->tag_string);
         Log::debug($entity);
 
         // レコードが既に存在する、かつslugカラムの値が入ってないとき
@@ -80,10 +81,14 @@ class ArticlesTable extends Table
         return $query->group(['Articles.id']);
     }
 
+    // ここでtagsを作ってる
     protected function _buildTags($tagString)
     {
+
+        // return ["tag1", "tag2"];
+
         // 複数タグを付与したときに生きる処理
-        // タグのトリミング
+        // tagString（カンマ区切り文字列）をカンマで区切って配列に
         $newTags = array_map('trim', explode(',', $tagString));
         // すべての空のタグを削除
         $newTags = array_filter($newTags);
@@ -114,8 +119,7 @@ class ArticlesTable extends Table
             $out[] = $this->Tags->newEntity(['title' => $tag]);
         }
 
-        Log::debug("_buildTags");
-
+        // 既存タグだった場合は既存タグを、そうでなければ新規タグのarrayを返す
         return $out;
     }
 }

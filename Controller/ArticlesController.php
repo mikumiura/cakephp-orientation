@@ -38,13 +38,13 @@ class ArticlesController extends AppController
     {
         // articlesテーブルに新規レコードを一件追加
         $article = $this->Articles->newEntity();
+
         if ($this->request->is('post')) {
-            // postデータをgetData()で取得し、作成済みのレコードにセットする
+            
             $this->log('before patchEntity', 'debug');
+            // add画面で入力したデータ（postデータ）をgetData()で取得し、作成した新規レコードを上書きする　※まだ保存はしない
             $article = $this->Articles->patchEntity($article, $this->request->getData());
             $this->log('after patchEntity', 'debug');
-
-            $this->log($this->request->getData(), 'debug');
             
             // user_idの決め打ちは一時的なもので、あとで認証を構築する際に削除される
             $article->user_id = 1;
@@ -59,10 +59,11 @@ class ArticlesController extends AppController
             }
             $this->Flash->error(__('Unable to add your article.'));
         }
+
         // タグのリストを取得
         $tags = $this->Articles->Tags->find('list');
         $this->set('tags', $tags);
-
+        
         $this->set('article', $article);
     }
 
@@ -101,6 +102,7 @@ class ArticlesController extends AppController
         }
     }
 
+    // タグの取得
     public function tags()
     {
         // /tagsにアクセスが来たとき、/tags以下のパスパラメータを取得して、それをタグと判断する
