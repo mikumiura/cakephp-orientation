@@ -16,6 +16,8 @@ class ArticlesController extends AppController
 
         $this->loadComponent('Paginator');
         $this->loadComponent('Flash');
+
+        $this->Auth->allow(['tags']);
     }
 
     // /articles/indexにアクセスが来た時に処理される
@@ -119,5 +121,28 @@ class ArticlesController extends AppController
             'articles' => $articles,
             'tags' => $tags
         ]);
+    }
+
+    public function isAuthorized($user)
+    {
+        // アクセスURLの/articles以下のパスパラメータ（actionとする）がadd,tagsなら
+        // add,tagsアクションは常にログインしているユーザに許可される
+        $action = $this->request->getParam('action');
+        $this->log($action, 'debug');
+        if (in_array($action, ['add', 'tags'])) {
+            return true;
+        }
+
+        $slug = $this->request->getParam('pass.0');
+        $this->log($this->request->getParam('pass'), 'debug');
+        $this->log($slug, 'debug');
+        if (!$slug) {
+            return false;
+        }
+
+        $article = $this->Articles->findBySlug($slug)->first();
+
+        return $article->user_id === $user['id'];
+
     }
 }

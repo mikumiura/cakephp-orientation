@@ -14,7 +14,6 @@ class ArticlesTable extends Table
     {
         $this->addBehavior('Timestamp');
 
-        // belongsToManyは多対多のリレーション
         // ここはArticlesテーブルなので、記事とタグが多対多で紐づくことを規定している
         $this->belongsToMany('Tags');
     }
@@ -79,7 +78,7 @@ class ArticlesTable extends Table
         return $query->group(['Articles.id']);
     }
 
-    // ここでtagsを作ってる
+    // ここでtagsを生成
     protected function _buildTags($tagString)
     {
         // 複数タグを付与したときに生きる処理

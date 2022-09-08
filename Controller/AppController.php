@@ -55,6 +55,7 @@ class AppController extends Controller
         // コンポーネントの設定
         // postデータに対して認証を行うのでFormAuthenticateを使う
         $this->loadComponent('Auth', [
+            'authorize' => ['Controller'],
             'authenticate' => [
                 'Form' => [
                     'fields' => [
@@ -67,13 +68,17 @@ class AppController extends Controller
                 'controller' => 'Users',
                 'action' => 'login'
             ],
-            // コントローラでisAuthorizedを使う
-            'authorize' => ['Controller'],
             // 未認証の場合、直前のページに戻す
             'unauthorizedRedirect' => $this->referer()
         ]);
 
         // 認可不要なアクションの定義
         $this->Auth->allow(['display', 'view', 'index']);
+    }
+
+    public function isAuthorized($user)
+    {
+        // デフォルトではアクセスを拒否
+        return false;
     }
 }
