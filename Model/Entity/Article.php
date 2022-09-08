@@ -19,25 +19,26 @@ class Article extends Entity
     {
         // Log::debug("_getTagString");
 
-        // 基本的に記事追加した時はここを通る想定
+        // 記事の内容をadd/editしたとき
         // save前レコードにtag_stringがある場合はこのifでreturnしてる
         if (isset($this->_properties['tag_string'])) {
             return $this->_properties['tag_string'];
         }
 
-        // 記事の追加ページ読み込むとき
+        // addページ読み込むとき
         // tagsが生成されなかった時の処理
-        Log::debug($this->tags);
         if (empty($this->tags)) {
             return '';
         }
 
-        // tag_stringは""で、tagsは生成されてる時
-        Log::debug("hoge");
+        // editページ読み込むとき
         if ($this->tags) {
             $tags = new Collection($this->tags);
+            Log::debug($tags);
+            
             $str = $tags->reduce(function ($string, $tag) {
                 Log::debug('通って欲しい処理');
+                Log::debug($string . $tag->title . ', ');
                 return $string . $tag->title . ', ';
             }, '');
 

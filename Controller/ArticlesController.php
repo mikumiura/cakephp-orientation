@@ -43,13 +43,11 @@ class ArticlesController extends AppController
 
         if ($this->request->is('post')) {
 
-            $this->log('before patchEntity', 'debug');
             // add画面で入力したデータ（postデータ）をgetData()で取得し、作成した新規レコードを上書きする　※まだ保存はしない
             $article = $this->Articles->patchEntity($article, $this->request->getData());
-            $this->log('after patchEntity', 'debug');
             
             // $article->user_id = 1;
-            $article->user_id = $this->Auth->user('id');
+            $article->user_id = $this->Auth->user('id'); // authコンポーネントがサーバのセッションファイルからuserのidを読み出してる
 
             $this->log('before save', 'debug');
             // $this->log($article, 'debug');
@@ -77,7 +75,6 @@ class ArticlesController extends AppController
             ->contain('Tags') // 関連づけられたTagsを読み込む
             ->firstOrFail();
         if ($this->request->is(['post', 'put'])) {
-            // $article->hogehoge = 1;
             $this->Articles->patchEntity($article, $this->request->getData(), [
                 'accessibleFields' => ['user_id' => false] // user_idはセッションから一意に決まるので、編集できないようにする
             ]);
@@ -127,7 +124,7 @@ class ArticlesController extends AppController
 
     public function isAuthorized($user)
     {
-        // アクセスURLの/articles以下のパスパラメータ（actionとする）がadd,tagsなら
+        // アクセスURLの/articles以下のパスパラメータ（＝アクション）がadd/tagsなら
         // add,tagsアクションは常にログインしているユーザに許可される
         $action = $this->request->getParam('action');
         $this->log($action, 'debug');
@@ -135,14 +132,18 @@ class ArticlesController extends AppController
             return true;
         }
 
+        // add/tags以外のアクション（editとdelete）にはスラグが必要ですよの処理
+        // editとdeleteアクションには作業対象の記事が必要（これがスラグ）
         $slug = $this->request->getParam('pass.0');
         $this->log($slug, 'debug');
         if (!$slug) {
             return false;
         }
 
+        // edit/deleteの後のスラグを元にarticlesテーブルからレコードを取得し、
+        // user_idカラムの値とログインユーザのidが一緒ならtrueをリターンする
         $article = $this->Articles->findBySlug($slug)->first();
-
+        $this->log($user, 'debug');
         return $article->user_id === $user['id'];
 
     }

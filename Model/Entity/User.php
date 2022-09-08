@@ -47,7 +47,7 @@ class User extends Entity
     protected function _setPassword($value)
     {
         if (strlen($value)) {
-            Log::debug("_setPassword");
+            Log::debug("addの後にここを通りました");
             $hasher = new DefaultPasswordHasher();
             return $hasher->hash($value);
         }
