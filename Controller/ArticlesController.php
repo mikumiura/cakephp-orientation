@@ -48,8 +48,8 @@ class ArticlesController extends AppController
             $article = $this->Articles->patchEntity($article, $this->request->getData());
             $this->log('after patchEntity', 'debug');
             
-            // user_idの決め打ちは一時的なもので、あとで認証を構築する際に削除される
-            $article->user_id = 1;
+            // $article->user_id = 1;
+            $article->user_id = $this->Auth->user('id');
 
             $this->log('before save', 'debug');
             // $this->log($article, 'debug');
@@ -78,7 +78,9 @@ class ArticlesController extends AppController
             ->firstOrFail();
         if ($this->request->is(['post', 'put'])) {
             // $article->hogehoge = 1;
-            $this->Articles->patchEntity($article, $this->request->getData());
+            $this->Articles->patchEntity($article, $this->request->getData(), [
+                'accessibleFields' => ['user_id' => false] // user_idはセッションから一意に決まるので、編集できないようにする
+            ]);
             if ($this->Articles->save($article)) {
                 $this->Flash->success(__('Your article has been updated.'));
                 return $this->redirect(['action' => 'index']);
@@ -134,7 +136,6 @@ class ArticlesController extends AppController
         }
 
         $slug = $this->request->getParam('pass.0');
-        $this->log($this->request->getParam('pass'), 'debug');
         $this->log($slug, 'debug');
         if (!$slug) {
             return false;
