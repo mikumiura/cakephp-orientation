@@ -2,6 +2,7 @@
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
+use Cake\Collection\Collection;
 
 /**
  * Bookmark Entity
@@ -38,4 +39,20 @@ class Bookmark extends Entity
         'user' => true,
         'tags' => true,
     ];
+
+    protected function _getTagString()
+    {
+        if (isset($this->_properties['tag_string'])) {
+            return $this->_properties['tag_string'];
+        }
+        if (empty($this->tags)) {
+            return '';
+        }
+
+        $tags = new Collection($this->tags);
+        $str = $tags->reduce(function ($string, $tags) {
+            return $string . $tags->title . ',';
+        }, '');
+        return trim($str, ', ');
+    }
 }

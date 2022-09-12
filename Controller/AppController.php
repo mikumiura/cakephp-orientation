@@ -59,7 +59,7 @@ class AppController extends Controller
             'authenticate' => [
                 'Form' => [
                     'fields' => [
-                        'username' => 'email',
+                        'username' => 'email', //usersテーブルのemailをユーザ名として使用できるようにカスタマイズ
                         'password' => 'password'
                     ]
                 ]

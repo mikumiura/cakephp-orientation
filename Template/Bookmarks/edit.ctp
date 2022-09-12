@@ -25,7 +25,8 @@
     <fieldset>
         <legend><?= __('Edit Bookmark') ?></legend>
         <?php
-            echo $this->Form->control('user_id', ['options' => $users]);
+            // user_idが選べちゃってよくないので削除
+            // echo $this->Form->control('user_id', ['options' => $users]);
             echo $this->Form->control('title');
             echo $this->Form->control('description');
             echo $this->Form->control('url');
