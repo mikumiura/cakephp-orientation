@@ -55,6 +55,7 @@ class BookmarksController extends AppController
         $bookmark = $this->Bookmarks->newEntity();
         if ($this->request->is('post')) {
             $bookmark = $this->Bookmarks->patchEntity($bookmark, $this->request->getData());
+            $bookmark->user_id = $this->Auth->user('id');
             if ($this->Bookmarks->save($bookmark)) {
                 $this->Flash->success('ブックマークを保存しました。');
                 return $this->redirect(['action' => 'index']);
@@ -78,15 +79,18 @@ class BookmarksController extends AppController
         $bookmark = $this->Bookmarks->get($id, [
             'contain' => ['Tags'],
         ]);
+
         if ($this->request->is(['patch', 'post', 'put'])) {
             $bookmark = $this->Bookmarks->patchEntity($bookmark, $this->request->getData());
+            $bookmark->user_id = $this->Auth->user('id');
             if ($this->Bookmarks->save($bookmark)) {
                 $this->Flash->success('ブックマークを保存しました。');
                 return $this->redirect(['action' => 'index']);
             }
             $this->Flash->error('ブックマークを保存できませんでした。');
         }
-        $tags = $this->Bookmarks->Tags->find('list', ['limit' => 200]);
+
+        $tags = $this->Bookmarks->Tags->find('list');
         $this->set(compact('bookmark', 'tags'));
         $this->set('_serialize', ['bookmark']);
     }
@@ -118,22 +122,29 @@ class BookmarksController extends AppController
             'tags' => $tags
         ]);
 
+        // ログインユーザに紐づくブックマーク一覧を表示するための準備
+        $this->paginate = [
+            'conditions' => [
+                'Bookmarks.user_id' => $this->Auth->user('id'),
+            ]
+            ];
+
         $this->set([
-            'bookmarks' => $bookmarks,
-            'tags' => $tags
+            // 'bookmarks' => $bookmarks,
+            'tags' => $tags,
+            'bookmarks' => $this->paginate($bookmarks)
         ]);
     }
 
     public function isAuthorized($user)
     {
         $action = $this->request->getParam('action');
-
+        
         if (in_array($action, ['index', 'add', 'tags'])) {
             return true;
         }
-
-        // 上記以外のアクションにアクセスが来た時
-        // 例えば/edit/の後には編集するブクマのidが必要
+                
+        // 上記以外のアクションにはブックマークのidが必要
         if (!$this->request->getParam('pass.0')) {
             return false;
         }

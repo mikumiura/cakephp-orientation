@@ -3,6 +3,7 @@ namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
 use Cake\Collection\Collection;
+use Cake\Log\Log;
 
 /**
  * Bookmark Entity
@@ -38,20 +39,29 @@ class Bookmark extends Entity
         'modified' => true,
         'user' => true,
         'tags' => true,
+        'tag_string' => true,
     ];
 
+
+    // ページ読み込む用の処理にある return で返すデータはテンプレートに渡されてそう💡
     protected function _getTagString()
     {
+        // add/edit での入力内容を save する時
         if (isset($this->_properties['tag_string'])) {
             return $this->_properties['tag_string'];
         }
+
+        // add ページの読み込み時
         if (empty($this->tags)) {
             return '';
         }
 
+        // edit ページの読み込み時
         $tags = new Collection($this->tags);
-        $str = $tags->reduce(function ($string, $tags) {
-            return $string . $tags->title . ',';
+        $str = $tags->reduce(function ($string, $tag) {
+            Log::debug($string);
+            Log::debug($tag->title);
+            return $string . $tag->title . ', ';
         }, '');
         return trim($str, ', ');
     }

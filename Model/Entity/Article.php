@@ -14,31 +14,27 @@ class Article extends Entity
         'slug' => false,
     ];
 
-    // tag_stringをDBから読み出す際の加工処理
     protected function _getTagString()
     {
         // Log::debug("_getTagString");
 
-        // 記事の内容をadd/editしたとき
+        // 記事の内容を add/edit したとき
         // save前レコードにtag_stringがある場合はこのifでreturnしてる
         if (isset($this->_properties['tag_string'])) {
             return $this->_properties['tag_string'];
         }
 
-        // addページ読み込むとき
-        // tagsが生成されなかった時の処理
+        // add ページの読み込み時
         if (empty($this->tags)) {
             return '';
         }
 
-        // editページ読み込むとき
+        // edit ページの読み込み時
         if ($this->tags) {
             $tags = new Collection($this->tags);
             Log::debug($tags);
             
             $str = $tags->reduce(function ($string, $tag) {
-                Log::debug('通って欲しい処理');
-                Log::debug($string . $tag->title . ', ');
                 return $string . $tag->title . ', ';
             }, '');
 
