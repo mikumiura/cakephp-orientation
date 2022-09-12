@@ -1,31 +1,20 @@
-<!-- File:src/Template/Articles/index.ctp -->
-
-<h1>記事一覧</h1>
-<?= $this->Html->link('記事の追加', ["action" => 'add']) ?>
+<h1>ブログ記事一覧</h1>
 <table>
     <tr>
-        <th>タイトル</th>
-        <th>作成日時</th>
-        <th>操作</th>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Created</th>
     </tr>
 
-    <!-- ここで、$articlesクエリオブジェクトを繰り返して、記事の情報を出力する -->
     <?php foreach ($articles as $article): ?>
     <tr>
+        <td><?= $article->id ?></td>
         <td>
-            <!-- htmlリンクの作成 -->
-            <?= $this->Html->link($article->title, ['action' => 'view', $article->slug]) ?>
+            <!-- "/view/$articles->id" に遷移するリンクを作成 -->
+            <?= $this->Html->link($article->title, ['action' => 'view', $article->id]) ?>
         </td>
         <td>
             <?= $article->created->format(DATE_RFC850) ?>
-        </td>
-        <td>
-            <?= $this->Html->link('編集', ['action' => 'edit', $article->slug]) ?>
-            <?= $this->Form->postLink(
-                '削除',
-                ['action' => 'delete', $article->slug],
-                ['confirm' => 'よろしいですか？'])
-            ?>
         </td>
     </tr>
     <?php endforeach; ?>

@@ -52,33 +52,33 @@ class AppController extends Controller
          */
         //$this->loadComponent('Security');
 
-        // コンポーネントの設定
-        // postデータに対して認証を行うのでFormAuthenticateを使う
-        $this->loadComponent('Auth', [
-            'authorize' => ['Controller'],
-            'authenticate' => [
-                'Form' => [
-                    'fields' => [
-                        'username' => 'email', //usersテーブルのemailをユーザ名として使用できるようにカスタマイズ
-                        'password' => 'password'
-                    ]
-                ]
-            ],
-            'loginAction' => [
-                'controller' => 'Users',
-                'action' => 'login'
-            ],
-            // 未認証の場合、直前のページに戻す
-            'unauthorizedRedirect' => $this->referer()
-        ]);
+    //     // コンポーネントの設定
+    //     // postデータに対して認証を行うのでFormAuthenticateを使う
+    //     $this->loadComponent('Auth', [
+    //         'authorize' => ['Controller'],
+    //         'authenticate' => [
+    //             'Form' => [
+    //                 'fields' => [
+    //                     'username' => 'email', //usersテーブルのemailをユーザ名として使用できるようにカスタマイズ
+    //                     'password' => 'password'
+    //                 ]
+    //             ]
+    //         ],
+    //         'loginAction' => [
+    //             'controller' => 'Users',
+    //             'action' => 'login'
+    //         ],
+    //         // 未認証の場合、直前のページに戻す
+    //         'unauthorizedRedirect' => $this->referer()
+    //     ]);
 
-        // 認可不要なアクションの定義
-        $this->Auth->allow(['display', 'view', 'index']);
+    //     // 認可不要なアクションの定義
+    //     $this->Auth->allow(['display', 'view', 'index']);
     }
 
-    public function isAuthorized($user)
-    {
-        // デフォルトではアクセスを拒否
-        return false;
-    }
+    // public function isAuthorized($user)
+    // {
+    //     // デフォルトではアクセスを拒否
+    //     return false;
+    // }
 }
