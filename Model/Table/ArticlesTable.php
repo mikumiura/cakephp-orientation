@@ -19,9 +19,9 @@ class ArticlesTable extends Table
     public function validationDefault(Validator $validator)
     {
         $validator
-            ->allowEmptyString('title', false)
+            ->notEmptyString('title')
             ->requirePresence('title')
-            ->allowEmptyString('body', false)
+            ->notEmptyString('body')
             ->requirePresence('body');
         
         return $validator;

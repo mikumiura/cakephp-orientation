@@ -12,6 +12,8 @@ class UsersTable extends Table
             ->notEmptyString('username', 'A username is required.')
             ->notEmptyString('password', 'A password is required.')
             ->notEmptyString('role', 'A role is required.')
+            // role について追加のチェック項目を設定
+            // 入力値が admin/author だったらOK
             ->add('role', 'inList', [
                 'rule' => ['inList', ['admin', 'author']],
                 'message' => 'Please enter a valid role.'
