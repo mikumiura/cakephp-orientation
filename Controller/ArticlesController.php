@@ -1,6 +1,7 @@
 <?php
-
 namespace App\Controller;
+
+use Cake\Http\Exception\NotFoundException;
 
 class ArticlesController extends AppController
 {
@@ -29,6 +30,8 @@ class ArticlesController extends AppController
         $article = $this->Articles->newEntity();
         if ($this->request->is('post')) {
             $article = $this->Articles->patchEntity($article, $this->request->getData());
+            // Auth コンポーネントがセッションファイルから取ってきたログインユーザの id で $article の user_id カラムを更新
+            $article->user_id = $this->Auth->user('id');
             if ($this->Articles->save($article)) {
                 $this->Flash->success(__('Your article has been saved.'));
                 return $this->redirect(['action' => 'index']);
@@ -37,7 +40,10 @@ class ArticlesController extends AppController
         }
         $this->set('article', $article);
 
-        $categories = $this->Articles->Categories->find('treeList'); // treeList ファインダー
+        // ツリーリストの形で categories を取得
+        // articles/add の方だよ、、
+        $categories = $this->Articles->Categories->find('treeList');
+        // $this->log($categories, 'debug');
         $this->set(compact('categories'));
     }
 

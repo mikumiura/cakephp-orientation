@@ -52,33 +52,24 @@ class AppController extends Controller
          */
         //$this->loadComponent('Security');
 
-    //     // コンポーネントの設定
-    //     // postデータに対して認証を行うのでFormAuthenticateを使う
-    //     $this->loadComponent('Auth', [
-    //         'authorize' => ['Controller'],
-    //         'authenticate' => [
-    //             'Form' => [
-    //                 'fields' => [
-    //                     'username' => 'email', //usersテーブルのemailをユーザ名として使用できるようにカスタマイズ
-    //                     'password' => 'password'
-    //                 ]
-    //             ]
-    //         ],
-    //         'loginAction' => [
-    //             'controller' => 'Users',
-    //             'action' => 'login'
-    //         ],
-    //         // 未認証の場合、直前のページに戻す
-    //         'unauthorizedRedirect' => $this->referer()
-    //     ]);
-
-    //     // 認可不要なアクションの定義
-    //     $this->Auth->allow(['display', 'view', 'index']);
+        $this->loadComponent('Auth', [
+            // login 後の遷移先
+            'loginRedirect' => [
+                'controller' => 'Articles',
+                'action' => 'index'
+            ],
+            // logout 後の遷移先
+            'logoutRedirect' => [
+                'controller' => 'Pages',
+                'action' => 'display',
+                'home' // 謎い
+            ]
+        ]);
     }
 
-    // public function isAuthorized($user)
-    // {
-    //     // デフォルトではアクセスを拒否
-    //     return false;
-    // }
+    // それぞれのコントローラの index/view アクションはログイン不要でアクセスできるよ
+    public function beforeFilter(Event $event)
+    {
+        $this->Auth->allow(['index', 'view', 'display']);
+    }
 }

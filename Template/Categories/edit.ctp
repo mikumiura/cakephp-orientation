@@ -25,6 +25,7 @@
     <fieldset>
         <legend><?= __('Edit Category') ?></legend>
         <?php
+            // parent_id は初期値に 'No parent category' を設定したセレクトボックス
             echo $this->Form->control('parent_id', ['options' => $parentCategories, 'empty' => 'No parent category']);
             echo $this->Form->control('name');
             echo $this->Form->control('description');

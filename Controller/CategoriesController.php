@@ -30,13 +30,13 @@ class CategoriesController extends AppController
         $this->set('_serialize', ['categories']);
     }
 
+    // moveUp アクション選択で実行される処理
+    // moveUp 処理の大元は TreeBehavior の _moveUp()
     public function moveUp($id = null)
     {
         $this->request->allowMethod(['post', 'put']);
         $category = $this->Categories->get($id);
-        // src/ORM/Behavior/TreeBehavior.php の moveUp() に処理渡してる
         if ($this->Categories->moveUp($category)) {
-            $this->log($category, 'debug');
             $this->Flash->success('The category has been moved up.');
         } else {
             $this->Flash->error('The category could not be moved up. Please, try again.');
@@ -48,7 +48,6 @@ class CategoriesController extends AppController
     {
         $this->request->allowMethod(['post', 'put']);
         $category = $this->Categories->get($id);
-        // src/ORM/Behavior/TreeBehavior.php の moveDown() に処理渡してる
         if ($this->Categories->moveDown($category)) {
             $this->Flash->success('The category has been moved down.');
         } else {
