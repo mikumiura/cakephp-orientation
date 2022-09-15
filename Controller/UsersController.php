@@ -37,6 +37,7 @@ class UsersController extends AppController
             }
             $this->Flash->error(__('Unable to add the user.'));
         }
+        // これがないと form のバリデーションとかが機能しなくなる
         $this->set('user', $user);
     }
 

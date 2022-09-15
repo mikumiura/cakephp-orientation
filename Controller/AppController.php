@@ -53,6 +53,7 @@ class AppController extends Controller
         //$this->loadComponent('Security');
 
         $this->loadComponent('Auth', [
+            'authorize' => ['Controller'],
             // login 後の遷移先
             'loginRedirect' => [
                 'controller' => 'Articles',
@@ -62,14 +63,25 @@ class AppController extends Controller
             'logoutRedirect' => [
                 'controller' => 'Pages',
                 'action' => 'display',
-                'home' // 謎い
+                'home' // 謎い -> display に渡されてる引数だた
             ]
         ]);
     }
 
+    // 認証によるアクセス制限をかける前にここみて
     // それぞれのコントローラの index/view アクションはログイン不要でアクセスできるよ
     public function beforeFilter(Event $event)
     {
         $this->Auth->allow(['index', 'view', 'display']);
+    }
+
+    // デフォルトで author と未ログインユーザにはアクセス権限を与えず、admin のみ全ての操作にアクセスできるように
+    public function isAuthorized($user)
+    {
+        if (isset($user['role']) && $user['role'] === 'admin') {
+            return true;
+        }
+
+        return false;
     }
 }

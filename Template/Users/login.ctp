@@ -1,3 +1,4 @@
+<!-- set で値渡しされてないので Form->create() に引数不要 -->
 <div class="users form">
 <?= $this->Flash->render() ?>
 <?= $this->Form->create() ?>

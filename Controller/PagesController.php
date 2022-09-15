@@ -40,6 +40,7 @@ class PagesController extends AppController
      */
     public function display(...$path)
     {
+        // $this->log($path, 'debug');
         if (!$path) {
             return $this->redirect('/');
         }
@@ -48,13 +49,16 @@ class PagesController extends AppController
         }
         $page = $subpage = null;
 
+        // $path[0] => home で !empty なのでここ通る
         if (!empty($path[0])) {
-            $page = $path[0];
+            $page = $path[0]; // $page = home
         }
         if (!empty($path[1])) {
             $subpage = $path[1];
         }
         $this->set(compact('page', 'subpage'));
+
+        // $this->log(implode('/', $path), 'debug');
 
         try {
             $this->render(implode('/', $path));

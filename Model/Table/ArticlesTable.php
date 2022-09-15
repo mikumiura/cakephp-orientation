@@ -26,4 +26,11 @@ class ArticlesTable extends Table
         
         return $validator;
     }
+
+    // articles テーブルにレコードの存在確認
+    // articles.id = $articleId であるレコードの user_id と、ログインユーザの id が一致してれば true -> controller で記事の編集と削除を許可する
+    public function isOwnedBy($articleId, $userId)
+    {
+        return $this->exists(['id' => $articleId, 'user_id' => $userId]);
+    }
 }

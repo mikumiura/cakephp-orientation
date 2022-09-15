@@ -30,7 +30,7 @@ class ArticlesController extends AppController
         $article = $this->Articles->newEntity();
         if ($this->request->is('post')) {
             $article = $this->Articles->patchEntity($article, $this->request->getData());
-            // Auth コンポーネントがセッションファイルから取ってきたログインユーザの id で $article の user_id カラムを更新
+            // Auth コンポーネントがセッションファイル（リクエスト情報が保存されてる）から取ってきたログインユーザの id で $article の user_id カラムを更新
             $article->user_id = $this->Auth->user('id');
             if ($this->Articles->save($article)) {
                 $this->Flash->success(__('Your article has been saved.'));
@@ -43,7 +43,6 @@ class ArticlesController extends AppController
         // ツリーリストの形で categories を取得
         // articles/add の方だよ、、
         $categories = $this->Articles->Categories->find('treeList');
-        // $this->log($categories, 'debug');
         $this->set(compact('categories'));
     }
 
@@ -70,5 +69,25 @@ class ArticlesController extends AppController
             $this->Flash->success(__('The article with id: {0} has been deleted.', h($id)));
             return $this->redirect(['action' => 'index']);
         }
+    }
+
+    public function isAuthorized($user)
+    {
+        // $this->log($user, 'debug');
+
+        // 登録ユーザは全員記事を追加できる
+        if ($this->request->getParam('action') === 'add') {
+            return true;
+        }
+
+        // その記事の所有者であれば記事を編集できる
+        if (in_array($this->request->getParam('action'), ['edit', 'delete'])) {
+            $articleId = (int)$this->request->getParam('pass.0');
+            if ($this->Articles->isOwnedBy($articleId, $user['id'])) { // $user['id'] はセッションファイルに保存されてるログインユーザの id
+                return true;
+            }
+        }
+
+        return parent::isAuthorized($user);
     }
 }
